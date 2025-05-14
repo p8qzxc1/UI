@@ -78,6 +78,7 @@ local Library = {
         AccentColor = Color3.fromRGB(125, 85, 255),
         OutlineColor = Color3.fromRGB(40, 40, 40),
         FontColor = Color3.new(1, 1, 1),
+        IconColor = Color3.new(1, 1, 1),
         Font = Font.fromEnum(Enum.Font.Code),
 
         Red = Color3.fromRGB(255, 50, 50),
@@ -478,12 +479,16 @@ local FetchIcons, Icons = pcall(function()
 end)
 function Library:GetIcon(IconName: string)
     if not FetchIcons then
-        return
+        return nil
     end
+
     local Success, Icon = pcall(Icons.GetAsset, IconName)
     if not Success then
-        return
+        return nil
     end
+
+    -- Add color property to icon
+    Icon.Color = self.Scheme.IconColor
     return Icon
 end
 
@@ -4335,13 +4340,9 @@ function Library:CreateWindow(WindowInfo)
             if Icon then
                 TabIcon = New("ImageLabel", {
                     Image = Icon.Url,
-                    ImageColor3 = "AccentColor",
+                    ImageColor3 = Icon.Color or Library.Scheme.IconColor,
                     ImageRectOffset = Icon.ImageRectOffset,
                     ImageRectSize = Icon.ImageRectSize,
-                    ImageTransparency = 0.5,
-                    Size = UDim2.fromScale(1, 1),
-                    SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                    Parent = TabButton,
                 })
             end
 
