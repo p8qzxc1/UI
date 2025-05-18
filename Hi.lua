@@ -4293,6 +4293,86 @@ do
         return DepGroupbox
     end
 
+    function Funcs:ViewCharacter(characterData)
+        -- characterData puede ser nil o una tabla con colores personalizados
+        local Groupbox = self
+        local Container = Groupbox.Container
+
+        -- Elimina previsualizaciones anteriores si existen
+        if Groupbox._CharacterPreview then
+            Groupbox._CharacterPreview:Destroy()
+            Groupbox._CharacterPreview = nil
+        end
+
+        -- Crea un Frame para la previsualización
+        local Preview = New("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 120),
+            Parent = Container,
+            LayoutOrder = 9999, -- Siempre al final
+        })
+
+        -- Colores por defecto o personalizados
+        local colors = characterData or {
+            Head = Color3.fromRGB(180, 172, 170),
+            Torso = Color3.fromRGB(30, 30, 30),
+            LeftArm = Color3.fromRGB(40, 40, 40),
+            RightArm = Color3.fromRGB(40, 40, 40),
+            LeftLeg = Color3.fromRGB(25, 25, 25),
+            RightLeg = Color3.fromRGB(25, 25, 25),
+        }
+
+        -- Dibuja partes del "personaje"
+        local function part(props)
+            return New("Frame", props)
+        end
+        -- Torso
+        part({
+            BackgroundColor3 = colors.Torso,
+            Size = UDim2.new(0, 36, 0, 48),
+            Position = UDim2.new(0.5, -18, 0, 36),
+            Parent = Preview,
+        })
+        -- Cabeza
+        part({
+            BackgroundColor3 = colors.Head,
+            Size = UDim2.new(0, 28, 0, 28),
+            Position = UDim2.new(0.5, -14, 0, 8),
+            Parent = Preview,
+        })
+        -- Brazo izquierdo
+        part({
+            BackgroundColor3 = colors.LeftArm,
+            Size = UDim2.new(0, 14, 0, 40),
+            Position = UDim2.new(0.5, -32, 0, 40),
+            Parent = Preview,
+        })
+        -- Brazo derecho
+        part({
+            BackgroundColor3 = colors.RightArm,
+            Size = UDim2.new(0, 14, 0, 40),
+            Position = UDim2.new(0.5, 18, 0, 40),
+            Parent = Preview,
+        })
+        -- Pierna izquierda
+        part({
+            BackgroundColor3 = colors.LeftLeg,
+            Size = UDim2.new(0, 14, 0, 36),
+            Position = UDim2.new(0.5, -14, 0, 84),
+            Parent = Preview,
+        })
+        -- Pierna derecha
+        part({
+            BackgroundColor3 = colors.RightLeg,
+            Size = UDim2.new(0, 14, 0, 36),
+            Position = UDim2.new(0.5, 0, 0, 84),
+            Parent = Preview,
+        })
+
+        Groupbox._CharacterPreview = Preview
+        Groupbox:Resize()
+    end
+
     BaseGroupbox.__index = Funcs
     BaseGroupbox.__namecall = function(_, Key, ...)
         return Funcs[Key](...)
