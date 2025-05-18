@@ -1,12 +1,5 @@
---[[
-  Forked UI from bungie#0001
-  Edited by Depso
-  Improved by Claude
-]]
-
 local CloneRef = cloneref or function(a)return a end
 
---// Service handlers
 local Services = setmetatable({}, {
 	__index = function(self, Name: string)
 		local Service = game:GetService(Name)
@@ -14,11 +7,9 @@ local Services = setmetatable({}, {
 	end,
 })
 
--- / Locals
 local Player = Services.Players.LocalPlayer
 local Mouse = CloneRef(Player:GetMouse())
 
--- / Services
 local UserInputService = Services.UserInputService
 local TextService = Services.TextService
 local TweenService = Services.TweenService
@@ -30,8 +21,7 @@ local CurrentCam = Workspace.CurrentCamera
 
 local hiddenUI = get_hidden_gui or gethui or function(a)return CoreGui end
 
--- / Defaults 
-local OptionStates = {} -- Used for panic
+local OptionStates = {}
 local library = {
 	title = "Bozo depso",
 	company = "Company",
@@ -44,15 +34,13 @@ local library = {
 	Key = UserInputService.TouchEnabled and Enum.KeyCode.P or Enum.KeyCode.RightShift,
 	fps = 0,
 	Debug = true,
-
-	-- / Elements Config
 	transparency = 0,
-	backgroundColor = Color3.fromRGB(31, 31, 31),
-	headerColor = Color3.fromRGB(255, 255, 255),
-	companyColor = Color3.fromRGB(163, 151, 255),
-	acientColor = Color3.fromRGB(167, 154, 121),
-	darkGray = Color3.fromRGB(27, 27, 27),
-	lightGray = Color3.fromRGB(48, 48, 48),
+	backgroundColor = Color3.fromRGB(21, 21, 21),
+	headerColor = Color3.fromRGB(37, 37, 37),
+	companyColor = Color3.fromRGB(32, 32, 32),
+	acientColor = Color3.fromRGB(16, 16, 16),
+	darkGray = Color3.fromRGB(25, 25, 25),
+	lightGray = Color3.fromRGB(20, 20, 20),
 
 	Font = Enum.Font.Code,
 
@@ -306,31 +294,6 @@ function library:UnlockFps(new)
 	end
 end
 
-TweenWrapper:CreateStyle("Rainbow", 5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true)
-function library:ApplyRainbow(instance, Wave)
-	local Colors = library.rainbowColors
-	local RainbowEnabled = library.RainbowEnabled
-	
-	if not RainbowEnabled then return end
-
-	if not Wave then
-		instance.BackgroundColor3 = Colors.Keypoints[1].Value
-		TweenService:Create(instance, TweenWrapper.Styles["Rainbow"], {
-			BackgroundColor3 =  Colors.Keypoints[#Colors.Keypoints].Value
-		}):Play()
-
-		return
-	end
-
-	local gradient = Instance.new("UIGradient", instance)
-	gradient.Offset = Vector2.new(-0.8, 0)
-	gradient.Color = Colors
-
-	TweenService:Create(gradient, TweenWrapper.Styles["Rainbow"], {
-		Offset = Vector2.new(0.8, 0)
-	}):Play()
-end
-
 --/ Watermark library
 TweenWrapper:CreateStyle("wm", 0.24)
 TweenWrapper:CreateStyle("wm_2", 0.04)
@@ -394,8 +357,6 @@ function library:Init(Config)
 		bar.BackgroundColor3 = library.acientColor
 		bar.BackgroundTransparency = 0
 		bar.Size = UDim2.new(0, 0, 0, 2)
-
-		self:ApplyRainbow(bar, false)
 
 		barCorner.CornerRadius = UDim.new(0, 2)
 		barCorner.Parent = bar
@@ -747,7 +708,9 @@ function library:Init(Config)
 	TweenWrapper:CreateStyle("introduction end",0.5)
 
 	function library:BeginIntroduction()
-		Logo.Text = library.company:sub(1, 1):upper()
+		Logo.Text = 'S'
+		Logo.TextSize = 180
+		background.Size = UDim2.new(0, 700, 0, 500)
 
 		--TweenService:Create(edge, TweenWrapper.Styles["introduction"], {BackgroundTransparency = 0}):Play()
 		TweenService:Create(background, TweenWrapper.Styles["introduction"], {BackgroundTransparency = 0}):Play()
@@ -811,14 +774,14 @@ function library:Init(Config)
 	background.BackgroundColor3 = library.backgroundColor
 	background.Position = UDim2.new(0.5, 0, 0.5, 0)
 	--background.Size = UDim2.fromScale(0.5, 0.5)
-	background.Size = UDim2.fromOffset(594, 406)
+	background.Size = UDim2.fromOffset(800, 600)
 	background.ClipsDescendants = true
 	EnableDrag(background, 0.1)
 	
 	local SizeConstraint = Instance.new("UISizeConstraint")
 	SizeConstraint.Parent = background
-	SizeConstraint.MaxSize = Vector2.new(594, 406)
-	SizeConstraint.MinSize = Vector2.new(450, 300)
+	SizeConstraint.MaxSize = Vector2.new(800, 600)
+	SizeConstraint.MinSize = Vector2.new(600, 400)
 
 	--/ Style
 	local BGStroke = Instance.new("UIStroke", background)
@@ -2655,6 +2618,113 @@ function library:Init(Config)
 			tabButton.Text = text
 
 			return Components
+		end
+
+		-- Agregar botón de Unload al final de la función library:NewTab
+		function Components:NewUnloadButton(text)
+			text = text or "Unload"
+			local button = Instance.new("TextButton")
+			button.Text = text
+			button.Parent = page
+			button.BackgroundColor3 = library.darkGray
+			button.BackgroundTransparency = library.transparency
+			button.Size = UDim2.new(0, 396, 0, 24)
+			button.AutoButtonColor = false
+			button.Font = library.Font
+			button.TextColor3 = Color3.fromRGB(190, 190, 190)
+			button.TextSize = 14
+			button.MouseButton1Click:Connect(function()
+				if Blur then Blur:Destroy() end
+				library:Remove()
+			end)
+			local buttonCorner = Instance.new("UICorner", button)
+			buttonCorner.CornerRadius = UDim.new(0, 2)
+			local buttonStroke = Instance.new("UIStroke", button)
+			buttonStroke.Thickness = 1
+			buttonStroke.Color = library.lightGray
+			buttonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			return button
+		end
+
+		function Components:NewColorPicker(text, default, callback)
+			text = text or "Color Picker"
+			default = default or Color3.fromRGB(255, 0, 0)
+			callback = callback or function() end
+
+			local pickerFrame = Instance.new("Frame")
+			pickerFrame.Parent = page
+			pickerFrame.BackgroundColor3 = library.darkGray
+			pickerFrame.BackgroundTransparency = library.transparency
+			pickerFrame.Size = UDim2.new(0, 396, 0, 120)
+			pickerFrame.BorderSizePixel = 0
+
+			local label = Instance.new("TextLabel", pickerFrame)
+			label.Text = text
+			label.Size = UDim2.new(1, 0, 0, 20)
+			label.BackgroundTransparency = 1
+			label.TextColor3 = Color3.fromRGB(190, 190, 190)
+			label.Font = library.Font
+			label.TextSize = 14
+			label.Position = UDim2.new(0, 0, 0, 0)
+			label.TextXAlignment = Enum.TextXAlignment.Left
+
+			-- Color area
+			local colorArea = Instance.new("ImageLabel", pickerFrame)
+			colorArea.Position = UDim2.new(0, 10, 0, 30)
+			colorArea.Size = UDim2.new(0, 100, 0, 100)
+			colorArea.BackgroundTransparency = 1
+			colorArea.Image = "rbxassetid://6020299385" -- white-black gradient
+			colorArea.ScaleType = Enum.ScaleType.Stretch
+
+			-- Hue bar
+			local hueBar = Instance.new("ImageLabel", pickerFrame)
+			hueBar.Position = UDim2.new(0, 120, 0, 30)
+			hueBar.Size = UDim2.new(0, 20, 0, 100)
+			hueBar.BackgroundTransparency = 1
+			hueBar.Image = "rbxassetid://6020299386" -- hue gradient
+			hueBar.ScaleType = Enum.ScaleType.Stretch
+
+			-- Color preview
+			local preview = Instance.new("Frame", pickerFrame)
+			preview.Position = UDim2.new(0, 150, 0, 30)
+			preview.Size = UDim2.new(0, 40, 0, 40)
+			preview.BackgroundColor3 = default
+			preview.BorderSizePixel = 0
+
+			-- RGB input
+			local rgbBox = Instance.new("TextBox", pickerFrame)
+			rgbBox.Position = UDim2.new(0, 150, 0, 80)
+			rgbBox.Size = UDim2.new(0, 80, 0, 24)
+			rgbBox.Text = string.format("%d, %d, %d", default.R*255, default.G*255, default.B*255)
+			rgbBox.BackgroundColor3 = library.headerColor
+			rgbBox.TextColor3 = Color3.fromRGB(190, 190, 190)
+			rgbBox.Font = library.Font
+			rgbBox.TextSize = 14
+			rgbBox.ClearTextOnFocus = false
+
+			-- Logic
+			local selectedColor = default
+			local function updateColor(newColor)
+				selectedColor = newColor
+				preview.BackgroundColor3 = newColor
+				rgbBox.Text = string.format("%d, %d, %d", math.floor(newColor.R*255), math.floor(newColor.G*255), math.floor(newColor.B*255))
+				callback(newColor)
+			end
+			rgbBox.FocusLost:Connect(function(enter)
+				if enter then
+					local r, g, b = rgbBox.Text:match("(%d+),%s*(%d+),%s*(%d+)")
+					r, g, b = tonumber(r), tonumber(g), tonumber(b)
+					if r and g and b then
+						updateColor(Color3.fromRGB(r, g, b))
+					end
+				end
+			end)
+			-- (Nota: Para un picker completo, se debe agregar lógica de mouse para colorArea y hueBar)
+			return {
+				SetColor = updateColor,
+				GetColor = function() return selectedColor end,
+				Frame = pickerFrame
+			}
 		end
 		return Components
 	end
